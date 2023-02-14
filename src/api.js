@@ -14,47 +14,52 @@ async function getAllUsers() {
 }
 
 async function getAllUserMessages(username) {
-  const query = `query {
-    user(username:$username) {
-      username,
+  const query = `query GetUserMessages($username: ID!) {
+    user(username: $username) {
+      username
       messages {
+        id
         body
       }
     }
   }`;
   const variables = {
-    "username": username
-  }
+    username: username,
+  };
   const response = await axios.post(BASE_API_URL, { query, variables });
   return response.data.data;
 }
 
-async function addNewUser(username, firstName, lastName){
+async function addNewUser(username, firstName, lastName) {
   const variables = {
-    "username": username,
-    "firstName": firstName,
-    "lastName": lastName,
-  }
+    u: username,
+    f: firstName,
+    l: lastName,
+  };
   const mutation = `
-  mutation CreateUser($f: String!, $l: String, $u: ID!) {
+  mutation createUser($f: String!, $l: String!, $u: ID!) {
     createUser(username: $u, first_name: $f, last_name: $l) {
-      username,
-      first_name,
+      username
+      first_name
       last_name
     }
-  }`
+  }
+  `;
 
-  const response = await axios.post(BASE_API_URL, { query:mutation, variables });
+  const response = await axios.post(BASE_API_URL, {
+    query: mutation,
+    variables,
+  });
   return response.data.data;
 }
 
-async function addNewMessage(username, body){
+async function addNewMessage(username, body) {
   const variables = {
-    "username": username,
-    "body": body,
-  }
+    u: username,
+    b: body,
+  };
   const mutation = `
-  mutation CreateMessage($b: String, $u: ID!) {
+  mutation CreateMessage($b: String!, $u: ID!) {
     createMessage(username: $u, body: $b) {
       body
       user {
@@ -63,10 +68,13 @@ async function addNewMessage(username, body){
         last_name
       }
     }
-  }`
+  }`;
 
-  const response = await axios.post(BASE_API_URL, { query:mutation, variables });
+  const response = await axios.post(BASE_API_URL, {
+    query: mutation,
+    variables,
+  });
   return response.data.data;
 }
 
-export { getAllUserMessages, getAllUsers, addNewMessage, addNewUser}
+export { getAllUserMessages, getAllUsers, addNewMessage, addNewUser };
